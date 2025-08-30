@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <cstdio>
 
 #include "Devices.hpp"
 
@@ -58,6 +59,7 @@ int main() {
 			std::cout << "Driver: " << dev.driver_name << '\n';
 		}
 		std::cout << std::endl;
+		std::getchar();
 	}
 
 	return 0;

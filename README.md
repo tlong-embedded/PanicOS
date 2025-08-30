@@ -42,6 +42,12 @@ A simple operating system for 32-bits x86 PCs.
 
 ## Build Instructions
 
+* brew install nasm
+* brew install i686-elf-gcc
+* brew install qemu
+* brew install dosfstools
+* brew install mtools
+
 A build of gcc and binutils with `i686-elf` target triplet is required. `dosfstools` and `mtools` are also required for creating disk image. QEMU with target i686 or x86-64 is required for emulation
 
 Run `make` to create disk image and kernel image, run `make qemu` to start qemu emulation.
