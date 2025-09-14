@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug PanicOS Kernel with GDB",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/kernel/kernel",
+            "args": [],
+            "miDebuggerServerAddress": "localhost:1234",
+            "stopAtEntry": false,
+            "hardwareBreakpoints": {
+                "kmain": true
+            },
+            "cwd": "${workspaceFolder}/kernel",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/opt/homebrew/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make qemu-gdb",
+            "logging": {
+                "engineLogging": false
+            }
+        }
+    ]
+}

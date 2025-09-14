@@ -4,5 +4,6 @@
         "istream": "cpp",
         "iostream": "cpp",
         "ostream": "cpp"
-    }
+    },
+   "debug.variables.valueFormat": "hexadecimal"
 }

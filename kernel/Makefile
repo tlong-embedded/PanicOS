@@ -1,3 +1,4 @@
+# Common object files used by all architectures
 OBJS_COMMON = \
 	common/string.o\
 	core/console.o\
@@ -34,6 +35,7 @@ OBJS_COMMON = \
 	hal/power.o\
 	proc/kcall.o\
 
+# Object files specific to x86 architecture
 OBJS_X86 = \
 	arch/x86/lapic.o\
 	arch/x86/msi.o\
@@ -71,6 +73,7 @@ OBJS_X86 = \
 	proc/pty.o\
 	vectors.o\
 
+# Object files specific to RISC-V architecture
 OBJS_RISCV = \
 	arch/riscv/imsic.o\
 	arch/riscv/spinlock.o\
@@ -78,6 +81,7 @@ OBJS_RISCV = \
 	driver/riscv/ecam.o\
 	driver/riscv/platform.o
 
+# Select object files based on architecture
 ifeq ($(ARCH),riscv)
 OBJS = $(OBJS_COMMON) $(OBJS_RISCV)
 endif
@@ -86,27 +90,33 @@ ifeq ($(ARCH),x86)
 OBJS = $(OBJS_COMMON) $(OBJS_X86)
 endif
 
+# x86-specific dependencies and linker flags
 ifeq ($(ARCH),x86)
 X86DEP = entryother initcode
 X86LDEXTRA = -b binary $(X86DEP)
 endif
 
+# Compiler and assembler flags
 CFLAGS += -I. -fno-builtin
 ASFLAGS += -I.
 
+# Kernel build rule
 kernel : $(OBJS) arch/$(ARCH)/entry.o arch/$(ARCH)/kernel.ld $(X86DEP)
-	$(LD) $(LDFLAGS) -T arch/$(ARCH)/kernel.ld -o kernel arch/$(ARCH)/entry.o $(OBJS) $(shell $(CC) -print-libgcc-file-name) $(X86LDEXTRA)
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/kernel.ld -o kernel -Map kernel.map arch/$(ARCH)/entry.o $(OBJS) $(shell $(CC) -print-libgcc-file-name) $(X86LDEXTRA)
 
+# Rule to build x86 boot block (entryother)
 entryother: arch/x86/entryother.S
 	$(CC) $(CFLAGS) -fno-pic -nostdinc -I. -c arch/x86/entryother.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7000 -o bootblockother.o entryother.o
 	$(OBJCOPY) -S -O binary -j .text bootblockother.o entryother
 
+# Rule to build x86 init code (initcode)
 initcode: proc/init/initcode.S
 	$(CC) $(CFLAGS) -nostdinc -I. -c proc/init/initcode.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
 	$(OBJCOPY) -S -O binary initcode.out initcode
 
+# Clean rule to remove build artifacts
 .PHONY: clean
 clean:
-	rm -f $(OBJS_COMMON) $(OBJS_X86) $(OBJS_RISCV) kernel entryother bootblockother.o initcode.out initcode entryother.o initcode.o arch/x86/entry.o arch/riscv/entry.o
+	rm -f $(OBJS_COMMON) $(OBJS_X86) $(OBJS_RISCV) kernel kernel.map entryother bootblockother.o initcode.out initcode entryother.o initcode.o arch/x86/entry.o arch/riscv/entry.o
